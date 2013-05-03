@@ -1,4 +1,4 @@
-class KNearestNeighbor
+class NaiveBayes 
   attr_accessor :short_request_tellers, :long_request_tellers, :customers, :time_in_day
 
   def initialize t, c
@@ -28,3 +28,4 @@ class KNearestNeighbor
     end
   end
 end
+
