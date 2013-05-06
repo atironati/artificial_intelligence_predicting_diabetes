@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+require 'csv'
+ 
+CSV.foreach('data/data.csv') do |row|
+  puts row[0]
+end
+
+
 class Bank
   attr_accessor :short_request_tellers, :long_request_tellers, :customers, :time_in_day
 
