@@ -33,6 +33,7 @@ class KNearestNeighbor
   def nearest_neighbours(k=4, to_classify = nil)
     rand_num = Random.rand(@data.length)
     to_classify = to_classify || @data[rand_num]
+
     find_closest_data(k, to_classify)
   end
 
@@ -42,7 +43,7 @@ class KNearestNeighbor
     calculated_distances = {}
 
     @data.each_with_index do |row, index|
-      distance = Utils::euclidian_distance(to_classify, row, false, true)
+      distance = Utils::euclidian_distance(to_classify, row)
       calculated_distances[index] = [distance, row]
     end
 
