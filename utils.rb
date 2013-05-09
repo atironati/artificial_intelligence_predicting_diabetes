@@ -2,23 +2,25 @@ require 'csv'
 
 module Utils
 
+  # ----------------- variance methods -----------------
   def self.sum(a)
-    a.inject(0){|accum, i| accum + i }
+    a.inject(0){|accum, i| accum + i.to_f }
   end
 
   def self.mean(a)
     sum(a)/a.length.to_f
   end
 
-  def sample_variance(a)
+  def self.sample_variance(a)
     m = mean(a)
-    sum = a.inject(0){|accum, i| accum +(i-m)**2 }
+    sum = a.inject(0){|accum, i| accum +(i.to_f-m)**2 }
     sum/(a.length - 1).to_f
   end
 
   def self.standard_deviation(a)
     return Math.sqrt(sample_variance(a))
   end
+  # ----------------------------------------------------
 
   def self.remove_last_element(a)
     a[0..-2]
@@ -31,39 +33,32 @@ module Utils
     a_variance = standard_deviation(a)
 
     # remove zero values and find new variance
-    a_indices_to_remove = a.each_index.select{|i| arr[i] == 0}
-    a_indices_to_remove.each{ |del| a.delete_at(del) }
+    a_indices_to_remove = a.each_index.select{|i| a[i].to_f == 0.0}
+    a.delete_if.with_index { |_, index| a_indices_to_remove.include? index }
     cleansed_a_variance = standard_deviation(a)
 
-    if (Math.abs( a_variance - cleansed_a_variance ) > 0.05)
+    # remove zeroes if the difference in variances is above 0.05
+    if (a_variance - cleansed_a_variance).abs > 0.05
+      puts "REMOVING INDICES: #{a_indices_to_remove}"
       return a_indices_to_remove
     end
     []
   end
 
-  # discounts similar values from both arrays if either is missing
-  # betermines whether 0s are missing values based on variance of the data
-  def self.cleanse_missing_values(a,b)
-    indices_to_remove(a).each do |del|
-      a.delete_at(del)
-      b.delete_at(del)
-    end
-
-    indices_to_remove(b).each do |del|
-      a.delete_at(del)
-      b.delete_at(del)
-    end
-    [a,b]
+  # remove elements from the given array based on an array of indices
+  def self.remove_indices_from(a, indices)
+    a.delete_if.with_index { |_, i| indices.include? i }
   end
 
-  # calculate the euclidian distance between two data points
-  # assumes {a} does not contain a classification
-  # assumes {b} does contain a classification and removes it
-  def euclidian_distance(a, b)
-    b = remove_last_element(b)
-    a,b = *cleanse_missing_values(a,b)
+  # discounts similar values from both arrays based on given indices
+  # returns an array containing both modified arrays
+  def self.cleanse_missing_values(a,b,indices)
+    [remove_indices_from(a,indices), remove_indices_from(b,indices)]
+  end
 
-    Math.sqrt(a.zip(b).map { |x| (x[1] - x[0])**2 }.reduce(:+))
+  # calculate the euclidean distance between two data points
+  def self.euclidean_distance(a, b)
+    Math.sqrt(a.zip(b).map { |x| (x[1].to_f - x[0].to_f)**2 }.reduce(:+))
   end
 
   def self.parse_arguments()
@@ -77,8 +72,9 @@ module Utils
     end
   end
 
+  # parses the pima csv file, skipping the header row
   def self.parse_csv(filename = 'pima')
-    items = {}
+    items = []
     count = 0
     first = true
 
