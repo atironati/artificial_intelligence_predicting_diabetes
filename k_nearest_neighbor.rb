@@ -9,15 +9,15 @@ class KNearestNeighbor
 
   # classify and report on accuracy of classification if applicable
   def report(k=4, to_classify = nil)
+    rand_num = Random.rand(@data.length)
+    to_classify = to_classify || @data[rand_num]
     classification = classify(k, to_classify)
     puts "predicted classification: #{classification}"
     puts "actual classification: #{to_classify.last}"
   end
 
   # classify given instance based on k nearest numbers
-  def classify(k=4, to_classify = nil)
-    rand_num = Random.rand(@data.length)
-    to_classify = to_classify || @data[rand_num]
+  def classify(k=4, to_classify)
     closest = nearest_neighbours(k, to_classify)
 
     puts "closest: #{closest}"
