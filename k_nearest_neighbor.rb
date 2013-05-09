@@ -11,6 +11,7 @@ class KNearestNeighbor
   def report(k=4, to_classify = nil)
     classification = classify(k, to_classify)
     puts "predicted classification: #{classification}"
+    puts "actual classification: #{to_classify.last}"
   end
 
   # classify given instance based on k nearest numbers
