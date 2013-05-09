@@ -48,7 +48,7 @@ class KNearestNeighbor
 
   private
 
-  #
+  # finds the k closest data points to to_classify based on euclidean distance
   # return format - an array with each element formatted as follows:
   # [ distance_from_to_classify, row, row_class ]
   def find_closest_data(k, to_classify, remove_last_el)
