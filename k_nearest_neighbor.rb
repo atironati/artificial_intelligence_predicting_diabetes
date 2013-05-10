@@ -3,15 +3,18 @@ require './utils'
 
 class KNearestNeighbor
   def initialize()
-    @data = Utils::parse_csv
+    @test_data = []
+    @training_data = Utils::parse_csv
     report()
   end
 
   # classify and report on accuracy of classification if applicable
   def report(k=4, to_classify = nil)
-    rand_num = Random.rand(@data.length)
-    to_classify = to_classify || @data[rand_num]
+    rand_num = Random.rand(@training_data.length)
+    to_classify = to_classify || @training_data[rand_num]
+
     classification = classify(k, to_classify)
+
     puts "predicted classification: #{classification}"
     puts "actual classification: #{to_classify.last}"
   end
@@ -20,9 +23,8 @@ class KNearestNeighbor
   def classify(k=4, to_classify)
     closest = nearest_neighbours(k, to_classify)
 
-    puts "closest: #{closest}"
     # create array counting occurrences of each value
-    freq = closest.inject(Hash.new(0)) { |h,v| puts h[v[1].last] += 1; h }
+    freq = closest.inject(Hash.new(0)) { |h,v| h[v[1].last] += 1; h }
     # sort to find closest neighbors
     freq = freq.sort_by { |v| freq[v] }
     puts "freq: #{freq}"
@@ -39,10 +41,7 @@ class KNearestNeighbor
   end
 
   # find the nearest neighbors to a given instance
-  def nearest_neighbours(k=4, to_classify = nil)
-    rand_num = Random.rand(@data.length)
-    to_classify = to_classify || @data[rand_num]
-
+  def nearest_neighbours(k=4, to_classify)
     find_closest_data(k, to_classify, true)
   end
 
@@ -60,7 +59,7 @@ class KNearestNeighbor
     tc_indices_to_remove = Utils::indices_to_remove(to_classify)
     to_classify = Utils::remove_indices_from(to_classify, tc_indices_to_remove)
 
-    @data.each_with_index do |row, index|
+    @training_data.each_with_index do |row, index|
       row_class = row.last
       row = Utils::remove_last_element(row)
 
