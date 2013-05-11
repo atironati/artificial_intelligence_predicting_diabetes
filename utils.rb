@@ -29,13 +29,16 @@ module Utils
   # determines whether 0 values should be removed based on
   # threshold between regular variance and cleansed variance
   def self.indices_to_remove(a)
+    # create local copy of a to avoid modifying outside of this method
+    local_a = a.dup
+
     # variance with possible zero values
-    a_variance = standard_deviation(a)
+    a_variance = standard_deviation(local_a)
 
     # remove zero values and find new variance
-    a_indices_to_remove = a.each_index.select{|i| a[i].to_f == 0.0}
-    a.delete_if.with_index { |_, index| a_indices_to_remove.include? index }
-    cleansed_a_variance = standard_deviation(a)
+    a_indices_to_remove = local_a.each_index.select{|i| local_a[i].to_f == 0.0}
+    local_a.delete_if.with_index { |_, index| a_indices_to_remove.include? index }
+    cleansed_a_variance = standard_deviation(local_a)
 
     # remove zeroes if the difference in variances is above 0.05
     if (a_variance - cleansed_a_variance).abs > 0.05
