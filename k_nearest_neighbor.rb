@@ -87,10 +87,6 @@ class KNearestNeighbor
       puts "#{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
     end
 
-    #fold_accuracy.sort.each do |k,v|
-      #puts "#{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
-    #end
-
     # average the overall accuracy
     total_accuracy = average_accuracies.inject([0,0]) do |acc, (k,v)|
       acc = [acc[0] + v[0], acc[1] + v[1]]
