@@ -89,14 +89,14 @@ class NaiveBayes
                                  total_accuracy[1].to_f) * 100).round(2)}"
   end
 
+  #P(Class | Row) = P(Row | Class) * P(Class)
   def classify(row)
     probabilities = {}
 
     row_class = row.last
     row = Utils::remove_last_element(row)
 
-    #puts @classes.inspect
-
+    # P(Row) = P(R1) * P(R2) * ... * P(Rn)
     @classes.each do |clazz|
       # calculate probability density for each element in this row
       prob_of_item_given_class = 1
@@ -104,20 +104,23 @@ class NaiveBayes
         prob_of_item_given_class *= probability_density(item, i, clazz)
       end
 
-      puts "prob density: %.50f" %  (prob_of_item_given_class * prob_of_class(clazz))
       probabilities[clazz] = prob_of_item_given_class *
                              prob_of_class(clazz)
     end
 
     # filter out values that aren't the most probable (possibly equal) values
     most_probable = probabilities.inject([]) do |acc, (k,v)|
-      #puts "K #{k} V #{v}"
       last_element = acc.last
       last_count = (last_element ? last_element[1] : 0)
-      last_count > v ? acc : acc << [k,v]
+      if last_count > v
+        acc
+      elsif last_count == v
+        acc << [k,v]
+      else
+        acc.clear
+        acc = [[k,v]]
+      end
     end
-
-    #puts "most probably: #{most_probable}"
 
     # randomly choose out of the top equal probable values
     most_probable[Random.rand(most_probable.length)][0]
