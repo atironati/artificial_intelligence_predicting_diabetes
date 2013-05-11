@@ -60,14 +60,43 @@ class KNearestNeighbor
       end
 
       # print total combined accuracy for this fold
-      total_accuracy = fold_accuracy.inject([0,0]) do |acc, (k,v)|
+      total_fold_accuracy = fold_accuracy.inject([0,0]) do |acc, (k,v)|
         acc = [acc[0] + v[0], acc[1] + v[1]]
       end
-      puts "overall accuracy: %#{((total_accuracy[0] / total_accuracy[1].to_f) * 100).round(2)}"
+      puts "overall accuracy: %#{((total_fold_accuracy[0] /
+                                   total_fold_accuracy[1].to_f) * 100).round(2)}"
 
       # move fold back into training data
       @training_data[i] = @test_data.delete(i)
     end
+
+    puts ""
+    puts "========== final results ========="
+
+    # average the accuracies by class
+    average_accuracies = Hash.new([0,0])
+    fold_accuracies.each do |fold_accuracy|
+      fold_accuracy.inject(average_accuracies) do |acc, (k,v)|
+        acc[k] = [acc[k][0] + v[0], acc[k][1] + v[1]]
+        acc
+      end
+    end
+
+    # print average accuracies by class
+    average_accuracies.sort.each do |k,v|
+      puts "#{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
+    end
+
+    #fold_accuracy.sort.each do |k,v|
+      #puts "#{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
+    #end
+
+    # average the overall accuracy
+    total_accuracy = average_accuracies.inject([0,0]) do |acc, (k,v)|
+      acc = [acc[0] + v[0], acc[1] + v[1]]
+    end
+    puts "overall accuracy: %#{((total_accuracy[0] /
+                                 total_accuracy[1].to_f) * 100).round(2)}"
   end
 
   # classify given instance based on k nearest numbers
