@@ -104,6 +104,7 @@ class NaiveBayes
         prob_of_item_given_class *= probability_density(item, i, clazz)
       end
 
+      puts "prob density: %.50f" %  (prob_of_item_given_class * prob_of_class(clazz))
       probabilities[clazz] = prob_of_item_given_class *
                              prob_of_class(clazz)
     end
