@@ -1,112 +1,11 @@
 #!/usr/bin/env ruby
+require './cross_validation'
 require './utils'
 
 class NaiveBayes
-  def initialize()
-    @training_data = Utils::parse_csv
-    @test_data = Hash.new([])
-    @training_data_array = [] # a more convenient way to iterate through the data
-    @total_items = 0
-    @class_count = Hash.new(0)
-    @classes = []
-    report()
-  end
-
-  # classify and report on accuracy of classification
-  # using 10-fold stratified cross-validation
-  def report()
-    # create hash representing accuracies for each class in each fold.
-    # consists of an array with each element correlated to a fold and
-    # representing a collection of accuracies, formatted as follows:
-    # [
-    #   {
-    #     "class0" => [correct_class0_classifications,
-    #                  total_class0_classifications],
-    #     "class1" => [correct_class1_classifications,
-    #                  total_class1_classififications]
-    #   },
-    #
-    #   ...
-    #
-    #   {
-    #     "class0" => [correct_class0_classifications,
-    #                  total_class0_classifications],
-    #     "class1" => [correct_class1_classifications,
-    #                  total_class1_classififications]
-    #   }
-    # ]
-    fold_accuracies = Array.new(10) { Hash.new([0,0]) }
-
-    fold_accuracies.each_with_index do |fold_accuracy, i|
-      # move current fold out of training data and into test data
-      @test_data[i] = @training_data.delete(i)
-
-      @training_data_array = []
-      # flatten out folds into one large array, for convenience
-      @training_data.each do |fold,rows|
-        rows.each do |row|
-          @training_data_array << row
-        end
-      end
-      @class_count = @training_data_array.inject(Hash.new(0)) { |h,v| h[v.last] += 1; h }
-      @classes = @class_count.inject([]) { |acc, (k,v)| acc << k }
-      @total_items = @training_data_array.size
-
-      # classify each row in the fold
-      @test_data[i].each do |row|
-        predicted = classify(row)
-        actual = row.last
-
-        # count the number of correct classifications for each class
-        if predicted == actual
-          fold_accuracy[actual] = [fold_accuracy[actual][0] + 1,
-                                   fold_accuracy[actual][1] + 1]
-        else
-          fold_accuracy[actual] = [fold_accuracy[actual][0],
-                                   fold_accuracy[actual][1] + 1]
-        end
-      end
-
-      # print accuracies for each class in this fold
-      puts "============= fold#{i+1} ============="
-      fold_accuracy.sort.each do |k,v|
-        puts "#{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
-      end
-
-      # print total combined accuracy for this fold
-      total_fold_accuracy = fold_accuracy.inject([0,0]) do |acc, (k,v)|
-        acc = [acc[0] + v[0], acc[1] + v[1]]
-      end
-      puts "overall accuracy: %#{((total_fold_accuracy[0] /
-                                   total_fold_accuracy[1].to_f) * 100).round(2)}"
-
-      # move fold back into training data
-      @training_data[i] = @test_data.delete(i)
-    end
-
-    puts ""
-    puts "========== final results ========="
-
-    # average the accuracies by class
-    average_accuracies = Hash.new([0,0])
-    fold_accuracies.each do |fold_accuracy|
-      fold_accuracy.inject(average_accuracies) do |acc, (k,v)|
-        acc[k] = [acc[k][0] + v[0], acc[k][1] + v[1]]
-        acc
-      end
-    end
-
-    # print average accuracies by class
-    average_accuracies.sort.each do |k,v|
-      puts "avg. #{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
-    end
-
-    # average the overall accuracy
-    total_accuracy = average_accuracies.inject([0,0]) do |acc, (k,v)|
-      acc = [acc[0] + v[0], acc[1] + v[1]]
-    end
-    puts "avg. overall accuracy: %#{((total_accuracy[0] /
-                                      total_accuracy[1].to_f) * 100).round(2)}"
+  attr_accessor :cv
+  def initialize(cv)
+    @cv = cv
   end
 
   #P(Class | Row) = P(Row | Class) * P(Class)
@@ -117,7 +16,7 @@ class NaiveBayes
     row = Utils::remove_last_element(row)
 
     # P(Row) = P(R1) * P(R2) * ... * P(Rn)
-    @classes.each do |clazz|
+    @cv.classes.each do |clazz|
       # calculate probability density for each element in this row
       prob_of_item_given_class = 1
       row.each_with_index do |item, i|
@@ -148,14 +47,14 @@ class NaiveBayes
 
   # P(Class)
   def prob_of_class(klass)
-    @class_count[klass] / @total_items.to_f
+    @cv.class_count[klass] / @cv.total_items.to_f
   end
 
   # calculate the probability density for a given attribute based on a class,
   # represented as a value {v} and a position in the data array
   def probability_density(v, pos, klass)
     # focus on instances in current dataset of the given class
-    data_by_klass = @training_data_array.select{ |row| row.last == klass }
+    data_by_klass = @cv.training_data_array.select{ |row| row.last == klass }
 
     # focus on specific data item (column) to the given attribute
     data_for_attr = data_by_klass.inject([]) { |acc, e| acc << e[1] }
@@ -170,4 +69,6 @@ class NaiveBayes
 
 end
 
-nb = NaiveBayes.new
+cv = CrossValidation.new
+nb = NaiveBayes.new(cv)
+cv.report(nb)
