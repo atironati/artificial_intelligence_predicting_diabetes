@@ -84,15 +84,15 @@ class KNearestNeighbor
 
     # print average accuracies by class
     average_accuracies.sort.each do |k,v|
-      puts "#{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
+      puts "avg. #{k}: %#{((v[0] / v[1].to_f) * 100).round(2)}"
     end
 
     # average the overall accuracy
     total_accuracy = average_accuracies.inject([0,0]) do |acc, (k,v)|
       acc = [acc[0] + v[0], acc[1] + v[1]]
     end
-    puts "overall accuracy: %#{((total_accuracy[0] /
-                                 total_accuracy[1].to_f) * 100).round(2)}"
+    puts "avg. overall accuracy: %#{((total_accuracy[0] /
+                                      total_accuracy[1].to_f) * 100).round(2)}"
   end
 
   # classify given instance based on k nearest numbers
@@ -103,7 +103,7 @@ class KNearestNeighbor
     freq = closest.inject(Hash.new(0)) { |h,v| h[v[1].last] += 1; h }
     # sort to find closest neighbors
     freq = freq.sort_by { |v| freq[v] }
-    #puts "freq: #{freq}"
+
     # filter out values that aren't the most common (possibly equal) values
     freq = freq.inject([]) do |acc,e|
       last_element = acc.last
@@ -112,7 +112,6 @@ class KNearestNeighbor
     end
 
     # randomly choose out of the top equal values
-    #puts "freq: #{freq}"
     freq[Random.rand(freq.length)][0]
   end
 
