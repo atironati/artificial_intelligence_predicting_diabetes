@@ -2,7 +2,7 @@
 require './utils'
 
 class KNearestNeighbor
-  def initialize(k = 4)
+  def initialize(k = 5)
     @training_data = Utils::parse_csv
     @test_data = Hash.new([])
     @k = k

@@ -64,17 +64,6 @@ module Utils
     Math.sqrt(a.zip(b).map { |x| (x[1].to_f - x[0].to_f)**2 }.reduce(:+))
   end
 
-  #def self.parse_arguments()
-    #ARGV.each do |arg|
-      ## 10 fold option here
-      #if arg == "-v" || arg == "--verbose"
-        ##verbose_mode = true
-      #else
-        ##file = File.open(arg, "r")
-      #end
-    #end
-  #end
-
   # write folds to pima-folds.csv for inspection
   def self.write_folds(folds)
     CSV.open("data/pima-folds.csv", "wb") do |csv|
@@ -149,8 +138,14 @@ module Utils
     folds
   end
 
+  # allows the user to specify a csv file to run the algorithms on
+  def self.parse_arguments
+    ARGV[0]
+  end
+
   # parses the pima csv file, skipping the header row
-  def self.parse_csv(filename = 'pima')
+  def self.parse_csv
+    filename = parse_arguments || 'pima'
     items = []
     count = 0
     first = true
