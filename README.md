@@ -2,11 +2,8 @@ Artificial Intelligence - Predicting Diabetes
 ===========================================
 
 An implementation of the k-Nearest Neighbor and Naïve Bayes algorithms,
-and  also the stratified cross validation method, for the purposes of predicting diabetes
-
-### Aim
-
-This study is aimed at creating algorithms that can reliably and accurately predict, based on a limited set of attributes, whether a person is likely to test positive for diabetes. It focuses on the performance of two algorithms I have implemented for performing these predictions: K-Nearest Neighbor and Naive Bayes classification. These algorithms use a method of 10-fold stratified cross-validation for training and evaluation.
+and  also the stratified cross validation method, for the purposes of
+predicting diabetes.
 
 Data
 -----
@@ -83,6 +80,7 @@ When considering the accuracy of my program by class, I noticed that both My K-N
 ### Dealing with Missing Values
 
 I spent a great deal of time during my programming attempting to compensate for the presence of missing values in the dataset. I used a method of evaluation for determining whether zero-values present in a row in the data set were missing values based on the standard deviation of values in the row. I first determine the standard deviation for the row with the zeroes, and then I remove them and determine the new standard deviation. If the difference between these values is significant (0.05 was my threshold, determined after experimenting with various data rows), I remove the zero-values and subsequently make sure to ignore those specific columns when comparing against the row we are attempting to classify. This means that missing values for an attribute cause that attribute to be omitted in considering any calculations concerning that attribute's row and the row we are comparing it to. Missing values are dangerous because they can lead to misclassifications, or can distort calculations of distance or probability density.
+
 One issue with zero-values in the dataset, which I did not have time to account for, was that in some instances they would multiply out through the calculation and make the entire expression zero. This may be the major issue in my implementation of Naive Bayes, making any row with a zero value basically useless. If I had the time I would have modified the program to include an implementation of Laplace correction to give zero values some infinitesimal increase in value, keeping them from discounting the entire expression. 
 
 Conclusions
@@ -91,8 +89,6 @@ Conclusions
 I have drawn several conclusions from my involvement in this experiment. First, it seems that while there are many very good algorithms for predicting these diabetes classifications, none of them seem quite good enough to be effective on their own. With the highest accuracy of ~77.5%, Naive Bayes paired with CFS feature selection is the best bet. But 77.5% percent is still fairly unreliable, especially when considering the serious nature of its judgement. While algorithms such as these could be useful corollaries to an evaluation of diabetes, they should never be given complete confidence.
 
 In the interest of improving performance, Correlation-based Feature Selection usually improves the accuracy of a classifier, or at the very least does not affect it. Also, K-NN is quite sensitive to values of K, and should most likely always have a K-value greater than 1. I have found that cleansing missing values is an important tactic for improving the accuracy of a classifier, as it allows for the inclusion of more data points. Naive Bayes is very sensitive to zero-values in the numerator of its probability density function, and I believe an implementation of Laplace correction would have greatly benefited the accuracy that my version was lacking.
-
-I would suggest that future work focus on improving accuracy as much as possible. In regards to my own algorithms, I believe that running time was the largest issue. That is what I would like to personally improve. But overall the nature of these classifier algorithms makes them unreliable on a regular basis, and I believe that increasing the general accuracy to be above, say, 85% would greatly benefit their usefulness. 
 
 Reflection
 -------
