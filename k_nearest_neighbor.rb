@@ -108,7 +108,14 @@ class KNearestNeighbor
     freq = freq.inject([]) do |acc,e|
       last_element = acc.last
       last_count = (last_element ? last_element[1] : 0)
-      last_count > e[1] ? acc : acc << e
+      if last_count > e[1]
+        acc
+      elsif last_count == e[1]
+        acc << e
+      else
+        acc.clear
+        acc = [e]
+      end
     end
 
     # randomly choose out of the top equal values
