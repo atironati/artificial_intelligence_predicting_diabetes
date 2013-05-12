@@ -6,14 +6,14 @@ and  also the stratified cross validation method, for the purposes of predicting
 
 Aim
 
-	This study is aimed at creating algorithms that can reliably and accurately predict, based on a limited set of attributes, whether a person is likely to test positive for diabetes. It focuses on the performance of two algorithms I have implemented for performing these predictions: K-Nearest Neighbor and Naive Bayes classification. These algorithms use a method of 10-fold stratified cross-validation for training and evaluation.
+This study is aimed at creating algorithms that can reliably and accurately predict, based on a limited set of attributes, whether a person is likely to test positive for diabetes. It focuses on the performance of two algorithms I have implemented for performing these predictions: K-Nearest Neighbor and Naive Bayes classification. These algorithms use a method of 10-fold stratified cross-validation for training and evaluation.
 
 Data
-===========================================
+-----
 
 Data Set
 
-	The dataset I have been using for testing these classifier algorithms consists of a sample of 768 female patients, all at least 21 years old, and of Pima Indian heritage, who were tested for diabetes. The dataset describes eight separate attributes believed by the World Health Organization to contribute or be correlated with testing positive for diabetes:
+The dataset I have been using for testing these classifier algorithms consists of a sample of 768 female patients, all at least 21 years old, and of Pima Indian heritage, who were tested for diabetes. The dataset describes eight separate attributes believed by the World Health Organization to contribute or be correlated with testing positive for diabetes:
 
 1. Number of times pregnant
 2. Plasma glucose concentration after 2 hours in an oral glucose tolerance test
@@ -33,13 +33,13 @@ A class attribute is included in the dataset, having “class0” represent a ne
 
 Data Preparation
 
-	In order to prepare the data, I downloaded the 'pima-indians-diabetes.data' dataset from the UCI machine learning repository and formatted it as a CSV file. I added a header row containing abbreviated column names for the eight attributes (num_pregnant, plasma_glucose_conc, blood_pressure, tricep_sf_thickness, 2hr_insulin, bmi, diab_ped_func, age). I normalized all of the numeric column data to get values in the range [0,1] using the WEKA normalization filter. I also nominalized the 'class' attribute from a numeric value to a string value, mapping 0 to “class0” and 1 to “class1”. I saved this newly-formatted CSV file containing normalization and nominalization as 'pima.csv'.
+In order to prepare the data, I downloaded the 'pima-indians-diabetes.data' dataset from the UCI machine learning repository and formatted it as a CSV file. I added a header row containing abbreviated column names for the eight attributes (num_pregnant, plasma_glucose_conc, blood_pressure, tricep_sf_thickness, 2hr_insulin, bmi, diab_ped_func, age). I normalized all of the numeric column data to get values in the range [0,1] using the WEKA normalization filter. I also nominalized the 'class' attribute from a numeric value to a string value, mapping 0 to “class0” and 1 to “class1”. I saved this newly-formatted CSV file containing normalization and nominalization as 'pima.csv'.
 
 Attribute Selection
 
-	I employed the use of the Correlation Feature Selection (CFS) technique while preparing my data, in the hopes that such a feature selection could improve the accuracy of my classifiers. CFS evaluates subsets of features on the basis of the following hypothesis:
+I employed the use of the Correlation Feature Selection (CFS) technique while preparing my data, in the hopes that such a feature selection could improve the accuracy of my classifiers. CFS evaluates subsets of features on the basis of the following hypothesis:
 
- "Good feature subsets contain features highly correlated with the classification, yet uncorrelated to each other”
+"Good feature subsets contain features highly correlated with the classification, yet uncorrelated to each other”
 
 The central assumption when using a feature selection technique like this is that the data in question contains many redundant or irrelevant features. These features either provide no more information than the currently selected features do, or they do not provide any useful information in any context at all. WEKA contains an easy to use CFS feature-selector which I used to select my limited subset of attributes. It chose the following four features as the most relevant:
 
@@ -48,39 +48,17 @@ Body Mass Index
 Diabetes pedigree function
 Age
 
- Results & Discussion
-===========================================
+Results & Discussion
+------
 
-	Below I have compiled a table of accuracies comparing the performance of several well-known classifier algorithms in relation to one another, and in relation to my implementations:
+Below I have compiled a table of accuracies comparing the performance of several well-known classifier algorithms in relation to one another, and in relation to my implementations:
 
 WEKA - accuracy on test set [%] 
 
-ZeroR
-1R
-1-NN
-5-NN
-NB
-DT
-MLP
-SVM
-No feature selection
-65.104
-72.135
-70.182
-73.177
-76.302
-73.828
-75.130
-77.344
-CFS feature selection
-65.104
-72.135
-68.359
-73.828
-77.474
-74.870
-75.260
-76.953
+|                       | ZeroR  | 1R     | 1-NN   | 5-NN   | NB     | DT     | MLP    | SVM    |
+| --------------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| No feature selection  | 65.104 | 72.135 | 70.182 | 73.177 | 76.302 | 73.828 | 75.130 | 77.344 |
+| CFS feature selection | 65.104 | 72.135 | 68.359 | 73.828 | 77.474 | 74.870 | 75.260 | 76.953 |
 
 My implementation - accuracy on test set [%]*
 
