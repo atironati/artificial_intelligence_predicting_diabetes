@@ -15,6 +15,26 @@ class NaiveBayes
   # classify and report on accuracy of classification
   # using 10-fold stratified cross-validation
   def report()
+    # create hash representing accuracies for each class in each fold.
+    # consists of an array with each element correlated to a fold and
+    # representing a collection of accuracies, formatted as follows:
+    # [
+    #   {
+    #     "class0" => [correct_class0_classifications,
+    #                  total_class0_classifications],
+    #     "class1" => [correct_class1_classifications,
+    #                  total_class1_classififications]
+    #   },
+    #
+    #   ...
+    #
+    #   {
+    #     "class0" => [correct_class0_classifications,
+    #                  total_class0_classifications],
+    #     "class1" => [correct_class1_classifications,
+    #                  total_class1_classififications]
+    #   }
+    # ]
     fold_accuracies = Array.new(10) { Hash.new([0,0]) }
 
     fold_accuracies.each_with_index do |fold_accuracy, i|
